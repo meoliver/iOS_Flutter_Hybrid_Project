@@ -2,7 +2,7 @@
 
 BUILD_MODE="debug"
 ARCHS_ARM="arm64,armv7"
-FLUTTER_ROOT=".flutter"
+FLUTTER_ROOT="/Users/wangjianfei/tool/flutter"
 PRODUCT_DIR="product"
 PRODUCT_ZIP="product.zip"
 
@@ -10,7 +10,7 @@ BUILD_PATH=".build_ios/${BUILD_MODE}"
 PRODUCT_PATH="${BUILD_PATH}/${PRODUCT_DIR}"
 PRODUCT_APP_PATH="${PRODUCT_PATH}/Flutter"
 # git repository path
-PRODUCT_GIT_DIR="/xx/xx/x"
+PRODUCT_GIT_DIR="../flutter_hybrid"
 
 usage() {
     echo
@@ -114,7 +114,7 @@ build_flutter_app() {
         cp -r -- "${app_framework_debug}" "${BUILD_PATH}"
     fi
 
-    app_plist_path=".ios/Flutter/AppFrameworkInfo.plist"
+    app_plist_path="ios/Flutter/AppFrameworkInfo.plist"
     cp -- "${app_plist_path}" "${BUILD_PATH}/App.framework/Info.plist"
 
     # copy flutter sdk
@@ -162,11 +162,41 @@ build_flutter_app() {
 flutter_copy_packages() {
     echo "================================="
     echo "Start copy flutter app plugin"
-
+    # copy FlutterPluginRegistrant 文件到对应目录下
     local flutter_plugin_registrant="FlutterPluginRegistrant"
-    local flutter_plugin_registrant_path=".ios/Flutter/${flutter_plugin_registrant}"
-    echo "copy 'flutter_plugin_registrant' from '${flutter_plugin_registrant_path}' to '${PRODUCT_PATH}/${flutter_plugin_registrant}'"
-    cp -rf -- "${flutter_plugin_registrant_path}" "${PRODUCT_PATH}/${flutter_plugin_registrant}"
+    local flutter_plugin_registrant_Classes="Classes"
+    # local flutter_plugin_registrant_path="ios/Runner/${flutter_plugin_registrant}"
+    # copy 内容
+    local flutter_plugin_registrant_path_h="ios/Runner/GeneratedPluginRegistrant.h"
+    local flutter_plugin_registrant_path_m="ios/Runner/GeneratedPluginRegistrant.m"
+    local flutter_plugin_registrant_path_podspec="ios/Runner/FlutterPluginRegistrant.podspec";
+    
+    # copy  GeneratedPluginRegistrant 到的目的地址
+    local flutter_plugin_registrant_pathdestination="${PRODUCT_PATH}/${flutter_plugin_registrant}/${flutter_plugin_registrant_Classes}/"
+    # copy podspec 的目的文件
+    local  flutter_plugin_podspec_pathdestination="${PRODUCT_PATH}/${flutter_plugin_registrant}/"
+
+    if [ ! -d ${flutter_plugin_registrant_pathdestination} ];then
+        mkdir "${PRODUCT_PATH}/${flutter_plugin_registrant}/"
+        mkdir "${flutter_plugin_registrant_pathdestination}"
+       
+        echo "创建文件夹 '${flutter_plugin_registrant_pathdestination}' "
+    else
+        echo "'${flutter_plugin_registrant_pathdestination}' 文件夹已经存在"
+    fi
+
+
+    echo "copy 'flutter_plugin_registrant_h' from '${flutter_plugin_registrant_path_h}' to '${flutter_plugin_registrant_pathdestination}'"
+    cp -rf -- "${flutter_plugin_registrant_path_h}" "${flutter_plugin_registrant_pathdestination}"
+
+    echo "copy 'flutter_plugin_registrant_m' from '${flutter_plugin_registrant_path_m}' to '${flutter_plugin_registrant_pathdestination}'"
+    cp -rf -- "${flutter_plugin_registrant_path_m}" "${flutter_plugin_registrant_pathdestination}"
+
+    echo "copy 'flutter_plugin_podspec' from '${flutter_plugin_registrant_path_podspec}' to '${flutter_plugin_podspec_pathdestination}'"
+    cp -rf -- "${flutter_plugin_registrant_path_podspec}" "${flutter_plugin_podspec_pathdestination}"
+
+
+
 
     local flutter_plugin=".flutter-plugins"
     if [ -e $flutter_plugin ]; then
@@ -217,7 +247,7 @@ start_build() {
 
     rm -rf ${BUILD_PATH}
 
-    flutter_get_packages
+    # flutter_get_packages
 
     build_flutter_app
 
