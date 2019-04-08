@@ -19,10 +19,16 @@
 6. 在Flutter工程目录下使用 build_ios.sh -m release/debug 进行打包，会自动将产物复制到git仓库目录，并执行git push。
 7. 在Native工程执行 pod install，会自动从git拉取产物并安装。
 
+本文将原文的 flutter_get_packages 注释掉了，因为觉得可以不用考虑。 需要将 build_ios.sh 里的 FLUTTER_ROOT=" " 路径改成你当前
+的fulutter环境路径
+
+
 需要注意下，原文用的是 用命令行创建的flutter，如果 Android studio 创建的flutter项目的话，你用的是一些工程目录对不上。
 本文做了一些路径的修改。
 另外，需要注意下，GeneratedPluginRegistrant.h GeneratedPluginRegistrant.m  默认是不需要上传git的，因为是动态变化的。
 可以在 flutter工程目录下，隐藏文件 .gitignore  配置成可以上传。
+
+
 
 使用Maven方式管理产物：
 1. 使用`flutter create -t module my_flutter`创建 Flutter Module 工程。
